@@ -1,39 +1,41 @@
+const internals = {};
+
 const mineBlocks = {};
+
+let isFirstGame = true;
 
 addHook(window, "window.Function.prototype.bind", function (value) {
     if (value && value.remainingSounds) {
-        mineBlocks.Instance = value;
-        Object.defineProperty(mineBlocks.Instance, "game", {
+        internals.Instance = value;
+        Object.defineProperty(internals.Instance, "game", {
             get() {
-                return mineBlocks.game;
+                return internals.game;
             },
             set(value) {
-                mineBlocks.game = value;
-                console.log("[API] Game was created", mineBlocks.game);
-                api.player = player;
+                internals.game = value;
+                if (isFirstGame) {
+                    mineBlocks.gamePrototype = internals.game.__class__.prototype;
+                    listeners.firstGame();
+                    isFirstGame = false;
+                }
             }
         });
-        deleteHook(window, "window.Function.prototype.bind");
+        return true;
     }
 });
 
-function isIntegerBetween(min, max, data) {
-    return Number.isInteger(data) && min <= data && max >= data;
-}
+const listeners = {};
 
-const player = {
-    set health(value) {
-        if (isIntegerBetween(0, 20, value)) {
-            mineBlocks.game.world.health = value
+listeners.firstGame = function () {
+    api.interpretCommand = function (text) {
+        if (typeof text === "string") {
+            internals.game.interpretCommand(text, true);
         } else {
-            console.log("Player's health must be an whole number between 0 and 20: ", value)
+            console.log("Invalid string:", text);
         }
-    },
-    get health() {
-        return mineBlocks.game.world.health;
     }
 }
 
-const api = {}
+const api = {};
 
-window.api = api;
+window.mineBlocksApi = api;

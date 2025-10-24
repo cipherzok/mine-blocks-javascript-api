@@ -14,13 +14,10 @@ function addHook(object, name, callback) {
     const original = reference.target[reference.method];
     originalMethods[name] = original;
     reference.target[reference.method] = function (...args) {
-        callback(...args);
+        if (callback(...args)) {
+            reference.target[reference.method] = originalMethods[name];
+            delete originalMethods[name];
+        }
         return original.apply(this, args);
     }
-}
-
-function deleteHook(object, name) {
-    const reference = getReference(object, name);
-    reference.target[reference.method] = originalMethods[name];
-    delete originalMethods[name];
 }
