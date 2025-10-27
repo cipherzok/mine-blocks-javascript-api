@@ -1,23 +1,3 @@
-const internals = {};
-
-addHook(window, "window.Function.prototype.bind", function (Instance) {
-    if (Instance && Instance.remainingSounds) {
-        const Main = Instance.__class__;
-        Main.Instance = new Proxy(Main.Instance, {
-            set(target, property, value) {
-                if (property === "game") {
-                    internals.game = value;
-                    listeners.newGame();
-                }
-                target[property] = value;
-                return true;
-            }
-        });
-        internals.Main = Main;
-        return true;
-    }
-});
-
 const api = {};
 
 const listeners = {};

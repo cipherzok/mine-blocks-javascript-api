@@ -1,5 +1,7 @@
 const originalMethods = {};
 
+const internals = {};
+
 function getReference(object, name) {
     const parts = name.split(".");
     parts.shift();
@@ -21,3 +23,28 @@ function addHook(object, name, callback) {
         return original.apply(this, args);
     }
 }
+
+addHook(window, "window.Function.prototype.bind", function (Instance) {
+    if (Instance && Instance.remainingSounds) {
+        internals.Main = Instance.__class__;
+        Object.defineProperty(Instance, "game", {
+            get() {
+                return internals.game;
+            },
+            set(value) {
+                internals.game = value;
+                listeners.newGame();
+            }
+        });
+        console.log("Main hooked");
+        return true;
+    }
+});
+
+addHook(window, "window.Object.keys", function (blockData) {
+    if (blockData.ObsidianPickaxe) {
+        internals.blockData = blockData;
+        console.log("blockData hooked");
+        return true;
+    }
+});
