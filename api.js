@@ -36,8 +36,27 @@ listeners.newGame = function () {
                 return internals.game.world.worldY;
             }
         }
+        api.registerCommand = function (name, callback) {
+            if (typeof name === "string") {
+                if (typeof callback === "function") {
+                    commands[name] = callback;
+                }
+            }
+        }
+        addHook(internals, "internals.game.interpretCommand", listeners.interpretCommand);
+        addHook(internals, "internals.game.__proto__.interpretCommand", listeners.interpretCommand);
         isFirstGame = false;
+        const event = new CustomEvent("firstGame");
+        dispatchEvent(event);
     }
+}
+
+const commands = {};
+
+listeners.interpretCommand = function (text) {
+    const args = text.split(" ");
+    const callback = commands[args.shift()];
+    if (callback) callback(...args);
 }
 
 window.mineBlocksApi = api;

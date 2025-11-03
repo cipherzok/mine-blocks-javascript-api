@@ -27,6 +27,7 @@ function addHook(object, name, callback) {
 addHook(window, "window.Function.prototype.bind", function (Instance) {
     if (Instance && Instance.remainingSounds) {
         internals.Main = Instance.__class__;
+        internals.StringMap = Instance.callOnMouseUp.__class__;
         Object.defineProperty(Instance, "game", {
             get() {
                 return internals.game;
@@ -41,9 +42,22 @@ addHook(window, "window.Function.prototype.bind", function (Instance) {
     }
 });
 
+const identifierToId = {};
+const idToIdentifier = {};
+
 addHook(window, "window.Object.keys", function (blockData) {
     if (blockData.ObsidianPickaxe) {
         internals.blockData = blockData;
+        for (const id in blockData) {
+            const identifier = blockData[id].h.identifier;
+            if (identifier) {
+                identifierToId[identifier] = id;
+                idToIdentifier[id] = identifier;
+            }
+        }
+        delete identifierToId[" enchanted_book"];
+        identifierToId.enchanted_book = "ebook";
+        idToIdentifier.ebook = "enchanted_book";
         console.log("blockData hooked");
         return true;
     }
