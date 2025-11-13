@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Mine Blocks New Commands Mod
-// @version      0.1.0
-// @description  Adds new chat commands to Mine Blocks (powered by Mine Blocks JavaScript API 0.1.0).
+// @version      0.1.1
+// @description  Adds new chat commands to Mine Blocks (powered by Mine Blocks JavaScript API 0.1.1).
 // @author       cipherzok
 // @match        https://mineblocks.com/1/embed/html5/
 // @match        https://zanzlanz.com/mineblocks.com/1/embed/html5/
@@ -10,10 +10,10 @@
 
 (function () {
     'use strict';
-    window.addEventListener("firstGame", function () {
-        mineBlocksApi.registerCommand("greet", (name = "Nobody") => {
-            console.log("Hello, " + name + "! :D");
-            mineBlocksApi.interpretCommand("give diamond");
+    addEventListener("firstGame", function () {
+        mineBlocksApi.registerCommand("/greet", function (name = "Nobody") {
+            mineBlocksApi.print("Hello, " + name + "! :D");
+            mineBlocksApi.interpretCommand("give cookie");
         });
     });
 })();
